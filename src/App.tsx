@@ -12,45 +12,52 @@ function useDelayUnmount(
   delayTime: number,
   ref: RefObject<HTMLDivElement>
 ) {
-  const [containerHeight, setContainerHeight] = useState(0);
+  const containerHeight = useRef(0);
   const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
     if (ref.current?.getBoundingClientRect) {
-      setContainerHeight(ref.current?.getBoundingClientRect().height);
-    } else {
-      setContainerHeight(0);
+      containerHeight.current = ref.current?.getBoundingClientRect().height;
     }
   }, [ref, shouldRender]);
-
-  // useEffect(() => {
-  //   console.log(containerHeight);
-  // }, [containerHeight]);
 
   useEffect(() => {
     let timeoutId: number;
     if (isMounted && !shouldRender) {
-      console.log("animate enter!", containerHeight);
+      console.log("animate enter!", containerHeight.current);
+
       setShouldRender(true);
+      setTimeout(() => {
+        console.log("entering!", containerHeight.current);
+        ref.current?.animate(
+          [{ height: 0 }, { height: `${containerHeight.current}px` }],
+          { duration: delayTime * 0.5 }
+        );
+      }, 0);
 
       setTimeout(() => {
-        console.log("will enter!", containerHeight);
+        console.log("will enter!", containerHeight.current);
       }, delayTime * 0.5);
 
       setTimeout(() => {
-        console.log("entered!", containerHeight);
+        console.log("entered!", containerHeight.current);
       }, delayTime);
     } else if (!isMounted && shouldRender) {
-      console.log("animate removal!", containerHeight);
+      console.log("animate removal!", containerHeight.current);
 
       setTimeout(() => {
-        console.log("will remove!", containerHeight);
+        console.log("will remove!", containerHeight.current);
+        ref.current?.animate(
+          [{ height: `${containerHeight.current}px` }, { height: 0 }],
+          { duration: delayTime * 0.5 }
+        );
       }, delayTime * 0.5);
 
       timeoutId = setTimeout(() => {
-        console.log("removed!", containerHeight);
+        containerHeight.current = 0;
         setShouldRender(false);
-      }, delayTime); // subtract to prevent reflow
+        console.log("removed!", containerHeight.current);
+      }, delayTime);
     }
     return () => clearTimeout(timeoutId);
   }, [isMounted, delayTime, shouldRender]);
@@ -77,43 +84,10 @@ const AnimateRender: React.FC<AnimateRenderProps> = ({
   const shouldRenderChild = useDelayUnmount(isMounted, duration, containerRef);
   const mountedStyle = { animation: enter };
   const unmountedStyle = { animation: exit };
-  // const [containerHeight, setContainerHeight] = useState(0);
-
-  // useEffect(() => {
-  //   if (containerRef.current?.getBoundingClientRect) {
-  //     console.log("enter!", containerRef.current?.getBoundingClientRect());
-  //     setContainerHeight(containerRef.current?.getBoundingClientRect().height);
-
-  //     // containerRef.current.style.
-  //   } else {
-  //     console.log("removed!");
-  //     setContainerHeight(0);
-  //   }
-  // }, [shouldRenderChild]);
-
-  // useEffect(() => {
-  //   if (containerHeight > 0) {
-  //     containerRef.current?.animate(
-  //       [{ position: "absolute" }, { position: "relative" }],
-  //       { duration: 200 }
-  //     );
-
-  //     setTimeout(() => {
-  //       containerRef.current?.animate(
-  //         [{ height: 0 }, { height: `${containerHeight}px` }],
-  //         { duration: 500, fill: "forwards" }
-  //       );
-  //     }, 60);
-  //   }
-  // }, [containerHeight]);
 
   if (!shouldRenderChild) return null;
   return (
-    <div
-      ref={containerRef}
-      className="animation-container"
-      // className={`animation-container ${isMounted ? "grow" : "shrink"}`}
-    >
+    <div ref={containerRef} className="animation-container">
       <div style={isMounted ? mountedStyle : unmountedStyle}>{children}</div>
     </div>
   );
@@ -133,19 +107,20 @@ const App: React.FC = () => {
 
       <AnimateRender
         isMounted={isMounted}
-        enter="bounceIn 500ms ease-in 500ms both"
-        exit="bounceOut 500ms ease-in 0ms both"
-        duration={1000}
-      >
-        <h1>YO DUDE!!!</h1>
-      </AnimateRender>
-      <AnimateRender
-        isMounted={isMounted}
         enter="slideIn 500ms ease-in 500ms both"
         exit="slideOut 500ms ease-in 0ms both"
         duration={1000}
       >
-        <h1>YO DUDE!!!</h1>
+        <h1>SLIDE!!!</h1>
+      </AnimateRender>
+
+      <AnimateRender
+        isMounted={isMounted}
+        enter="bounceIn 250ms ease-in 250ms both"
+        exit="bounceOut 250ms ease-in 0ms both"
+        duration={500}
+      >
+        <h1>BOUNCE!!!</h1>
       </AnimateRender>
 
       <section>
@@ -156,6 +131,15 @@ const App: React.FC = () => {
           delectus veritatis voluptatem quae.
         </p>
       </section>
+
+      <AnimateRender
+        isMounted={isMounted}
+        enter="slideIn 1000ms ease-in 1000ms both"
+        exit="slideOut 1000ms ease-in 0ms both"
+        duration={2000}
+      >
+        <h1>HOLLA PAPITO!!!</h1>
+      </AnimateRender>
     </main>
   );
 };

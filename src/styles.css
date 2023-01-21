@@ -17,40 +17,6 @@ h1 {
   overflow: hidden;
   border: 2px dashed purple;
 }
-/* 
-.grow {
-  animation: grow 0.5s;
-}
-
-.shrink {
-  animation: shrink 0.5s;
-} */
-
-/* @keyframes grow {
-  0% {
-    height: 0px;
-    visibility: hidden;
-  }
-  5% {
-    visibility: visible;
-  }
-  100% {
-    height: 180px;
-  }
-}
-
-@keyframes shrink {
-  0% {
-    height: 180px;
-    visibility: visible;
-  }
-  95% {
-    visibility: hidden;
-  }
-  100% {
-    height: 0px;
-  }
-} */
 
 @keyframes bounceIn {
   0% {
