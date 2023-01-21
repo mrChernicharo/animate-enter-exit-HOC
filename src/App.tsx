@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from "react";
+import React, { useState, useEffect, ReactNode, useRef, useMemo } from "react";
 import "./styles.css";
 
 function useDelayUnmount(isMounted: boolean, delayTime: number) {
@@ -9,28 +9,41 @@ function useDelayUnmount(isMounted: boolean, delayTime: number) {
     if (isMounted && !shouldRender) {
       setShouldRender(true);
     } else if (!isMounted && shouldRender) {
-      timeoutId = setTimeout(() => setShouldRender(false), delayTime);
+      timeoutId = setTimeout(() => setShouldRender(false), delayTime - 60); // subtract to prevent reflow
     }
     return () => clearTimeout(timeoutId);
   }, [isMounted, delayTime, shouldRender]);
   return shouldRender;
 }
 
-// prettier-ignore
-interface AnimateRenderProps { isMounted: boolean; enter:string; exit: string; children: ReactNode }
+interface AnimateRenderProps {
+  isMounted: boolean;
+  enter: string;
+  exit: string;
+  duration: number;
+  children: ReactNode;
+}
 const AnimateRender: React.FC<AnimateRenderProps> = ({
   isMounted,
   children,
   enter,
   exit,
+  duration,
 }: AnimateRenderProps) => {
-  const shouldRenderChild = useDelayUnmount(isMounted, 500);
+  const shouldRenderChild = useDelayUnmount(isMounted, duration);
   const mountedStyle = { animation: enter };
   const unmountedStyle = { animation: exit };
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   if (!shouldRenderChild) return null;
   return (
-    <div style={isMounted ? mountedStyle : unmountedStyle}>{children}</div>
+    <div
+      ref={containerRef}
+      className={`animation-container ${isMounted ? "grow" : "shrink"}`}
+    >
+      <div style={isMounted ? mountedStyle : unmountedStyle}>{children}</div>
+    </div>
   );
 };
 
@@ -52,7 +65,8 @@ const App: React.FC = () => {
       <AnimateRender
         isMounted={isMounted}
         enter="bounceIn 500ms ease-in"
-        exit="bounceOut 600ms ease-in"
+        exit="bounceOut 500ms ease-in"
+        duration={500}
       >
         <h1>YO DUDE!!!</h1>
       </AnimateRender>
@@ -61,6 +75,7 @@ const App: React.FC = () => {
         isMounted={isMounted2}
         enter="fadeIn 500ms ease-in"
         exit="fadeOut 600ms ease-in"
+        duration={500}
       >
         <h1>Hey buddy!!!</h1>
       </AnimateRender>
@@ -69,6 +84,7 @@ const App: React.FC = () => {
         isMounted={isMounted3}
         enter="slideIn 500ms ease-in"
         exit="slideOut 600ms ease-in"
+        duration={500}
       >
         <h1>Holla papi!!!</h1>
       </AnimateRender>

@@ -14,27 +14,43 @@ h1 {
   text-align: center;
 }
 
-@keyframes inAnimation {
+.animation-container {
+  display: block;
+  border: 2px dashed purple;
+  overflow: hidden;
+}
+
+.grow {
+  animation: grow 0.5s;
+}
+
+.shrink {
+  animation: shrink 0.5s;
+}
+
+@keyframes grow {
   0% {
-    transform: scale(0.1);
-    opacity: 0;
+    height: 0px;
+    visibility: hidden;
   }
-  60% {
-    transform: scale(1.2);
-    opacity: 1;
+  5% {
+    visibility: visible;
   }
   100% {
-    transform: scale(1);
+    height: 180px;
   }
 }
 
-@keyframes outAnimation {
-  20% {
-    transform: scale(1.2);
+@keyframes shrink {
+  0% {
+    height: 180px;
+    visibility: visible;
+  }
+  95% {
+    visibility: hidden;
   }
   100% {
-    transform: scale(0);
-    opacity: 0;
+    height: 0px;
   }
 }
 
@@ -51,7 +67,6 @@ h1 {
     transform: scale(1);
   }
 }
-
 @keyframes bounceOut {
   20% {
     transform: scale(1.2);
@@ -70,7 +85,6 @@ h1 {
     opacity: 1;
   }
 }
-
 @keyframes fadeOut {
   0% {
     opacity: 1;
@@ -90,7 +104,6 @@ h1 {
     transform: translate(0);
   }
 }
-
 @keyframes slideOut {
   0% {
     opacity: 1;
