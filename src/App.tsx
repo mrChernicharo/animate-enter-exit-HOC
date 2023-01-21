@@ -10,12 +10,14 @@ import AnimateRender2 from "./AnimateRender2";
 import "./styles.css";
 
 const App: React.FC = () => {
-  const [isMounted, setIsMounted] = useState(true);
-  const [isMounted2, setIsMounted2] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isMounted2, setIsMounted2] = useState(false);
+  const [isMounted3, setIsMounted3] = useState(false);
 
   const handleToggleClicked = () => {
     setIsMounted(!isMounted);
     setTimeout(() => setIsMounted2(!isMounted2), 1000);
+    setTimeout(() => setIsMounted3(!isMounted3), 2000);
   };
 
   return (
@@ -31,32 +33,18 @@ const App: React.FC = () => {
           alignItems: "center",
         }}
       >
-        {/* <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}> */}
+        <section style={{ flexShrink: 1, flexGrow: 0 }}>
+          <h2>Text 01</h2>
+          <div>Lorem ipsum dolor sit amet consectetur.</div>
+        </section>
 
-    
-
-        {/* <AnimateRender
-          isMounted={isMounted}
-          enter="slideIn 1000ms ease-in 1000ms both"
-          exit="slideOut 1000ms ease-in 0ms both"
-          duration={2000}
-          flexibleContainerX
-        >
-          <h3>HOLLA PAPITO!!!</h3>
-        </AnimateRender> */}
-
-        {/* <AnimateRender
-          isMounted={isMounted}
-          enter="slideIn 750ms ease-out 750ms both"
-          exit="slideOut 750ms ease-out 0ms both"
-          flexibleContainerY
-          duration={1000}
-        >
-          <div style={{ flexShrink: 0, flexGrow: 1 }}>
-            <h3>SLIDE!!!</h3>
+        <section style={{ flexShrink: 1, flexGrow: 0 }}>
+          <h2>Text 02</h2>
+          <div>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat
+            tenetur, sit voluptates illo ullam itaque cum sed reiciendis.
           </div>
-        </AnimateRender> */}
-
+        </section>
         <AnimateRender
           isMounted={isMounted}
           enter="bounceIn 500ms ease-in 250ms both"
@@ -70,32 +58,39 @@ const App: React.FC = () => {
 
         <AnimateRender
           isMounted={isMounted2}
-          enter="slideIn 500ms ease-in 500ms both"
-          exit="slideOut 500ms ease-in 0ms both"
-          duration={1000}
+          enter="fadeIn 1000ms ease-in 0ms both"
+          exit="fadeOut 1000ms ease-in 1000ms both"
+          duration={2000}
           flexibleContainerY
         >
-            <h3>SLIDE!!!</h3>
-        </AnimateRender> 
-        {/* <AnimateRender
-          isMounted={isMounted}
-          enter="slideIn 500ms ease-in 500ms both"
-          exit="slideOut 500ms ease-in 0ms both"
-          duration={1000}
-        >
-            <h3>FIXO!!!</h3>
-        </AnimateRender> */}
+          <h3>SLIDE!!!</h3>
+          <div style={{ display: "flex" }}>
+            <AnimateRender
+              isMounted={isMounted3}
+              enter="slideIn 500ms ease-in 0ms both"
+              exit="slideOut 500ms ease-in 0ms both"
+              duration={1000}
+              flexibleContainerX
+            >
+              <h3>INNER SLIDE!!!</h3>
+            </AnimateRender>
+            <AnimateRender
+              isMounted={isMounted3}
+              enter="slideIn 500ms ease-in 0ms both"
+              exit="slideOut 500ms ease-in 0ms both"
+              duration={1000}
+              flexibleContainerX
+            >
+              <h3>INNER SLIDE!!!</h3>
+            </AnimateRender>
+          </div>
+        </AnimateRender>
 
         <section style={{ flexShrink: 1, flexGrow: 0 }}>
-          <h2>Text 01</h2>
-          <div>Lorem ipsum dolor sit amet consectetur.</div>
-        </section>
-
-        <section style={{ flexShrink: 1, flexGrow: 0 }}>
-          <h2>Text 02</h2>
+          <h2>Text 03</h2>
           <div>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat
-            tenetur, sit voluptates illo ullam itaque cum sed reiciendis.
+            tenetur, sit voluptates illo ullam.
           </div>
         </section>
       </div>

@@ -21,10 +21,10 @@ export function useGrowShrinkContainer(
         },
         {
           ...(flexibleContainerY && {
-            height: `calc(${containerHeight.current}px - 1rem)`,
+            height: `calc(${containerHeight.current}px)`,
           }),
           ...(flexibleContainerX && {
-            width: `calc(${containerWidth.current}px - 1rem)`,
+            width: `calc(${containerWidth.current}px)`,
           }),
         },
       ],
@@ -43,10 +43,10 @@ export function useGrowShrinkContainer(
       [
         {
           ...(flexibleContainerY && {
-            height: `calc(${containerHeight.current}px - 1rem)`,
+            height: `calc(${containerHeight.current}px)`,
           }),
           ...(flexibleContainerX && {
-            width: `calc(${containerWidth.current}px - 1rem)`,
+            width: `calc(${containerWidth.current}px)`,
           }),
         },
         {

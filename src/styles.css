@@ -10,20 +10,17 @@
 
 h1 {
   font-size: 3.2em;
-  line-height: 1.1;
 }
 
 h3 {
   background-color: darkgoldenrod;
-  padding: 1rem;
+  margin: 0;
+
 }
 
 .animation-container {
   display: block;
-  /* overflow: hidden; */
-  padding: 1rem;
   transform-origin: center;
-  /* width: 100%; */
   border: 2px dashed blue;
 }
 
