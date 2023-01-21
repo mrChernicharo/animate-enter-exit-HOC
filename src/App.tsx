@@ -1,18 +1,60 @@
-import React, { useState, useEffect, ReactNode, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  ReactNode,
+  useRef,
+  RefObject,
+} from "react";
 import "./styles.css";
 
-function useDelayUnmount(isMounted: boolean, delayTime: number) {
+function useDelayUnmount(
+  isMounted: boolean,
+  delayTime: number,
+  ref: RefObject<HTMLDivElement>
+) {
+  const [containerHeight, setContainerHeight] = useState(0);
   const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (ref.current?.getBoundingClientRect) {
+      setContainerHeight(ref.current?.getBoundingClientRect().height);
+    } else {
+      setContainerHeight(0);
+    }
+  }, [ref, shouldRender]);
+
+  // useEffect(() => {
+  //   console.log(containerHeight);
+  // }, [containerHeight]);
 
   useEffect(() => {
     let timeoutId: number;
     if (isMounted && !shouldRender) {
+      console.log("animate enter!", containerHeight);
       setShouldRender(true);
+
+      setTimeout(() => {
+        console.log("will enter!", containerHeight);
+      }, delayTime * 0.5);
+
+      setTimeout(() => {
+        console.log("entered!", containerHeight);
+      }, delayTime);
     } else if (!isMounted && shouldRender) {
-      timeoutId = setTimeout(() => setShouldRender(false), delayTime - 60); // subtract to prevent reflow
+      console.log("animate removal!", containerHeight);
+
+      setTimeout(() => {
+        console.log("will remove!", containerHeight);
+      }, delayTime * 0.5);
+
+      timeoutId = setTimeout(() => {
+        console.log("removed!", containerHeight);
+        setShouldRender(false);
+      }, delayTime); // subtract to prevent reflow
     }
     return () => clearTimeout(timeoutId);
   }, [isMounted, delayTime, shouldRender]);
+
   return shouldRender;
 }
 
@@ -25,22 +67,52 @@ interface AnimateRenderProps {
 }
 const AnimateRender: React.FC<AnimateRenderProps> = ({
   isMounted,
-  children,
   enter,
   exit,
   duration,
+  children,
 }: AnimateRenderProps) => {
-  const shouldRenderChild = useDelayUnmount(isMounted, duration);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const shouldRenderChild = useDelayUnmount(isMounted, duration, containerRef);
   const mountedStyle = { animation: enter };
   const unmountedStyle = { animation: exit };
+  // const [containerHeight, setContainerHeight] = useState(0);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  // useEffect(() => {
+  //   if (containerRef.current?.getBoundingClientRect) {
+  //     console.log("enter!", containerRef.current?.getBoundingClientRect());
+  //     setContainerHeight(containerRef.current?.getBoundingClientRect().height);
+
+  //     // containerRef.current.style.
+  //   } else {
+  //     console.log("removed!");
+  //     setContainerHeight(0);
+  //   }
+  // }, [shouldRenderChild]);
+
+  // useEffect(() => {
+  //   if (containerHeight > 0) {
+  //     containerRef.current?.animate(
+  //       [{ position: "absolute" }, { position: "relative" }],
+  //       { duration: 200 }
+  //     );
+
+  //     setTimeout(() => {
+  //       containerRef.current?.animate(
+  //         [{ height: 0 }, { height: `${containerHeight}px` }],
+  //         { duration: 500, fill: "forwards" }
+  //       );
+  //     }, 60);
+  //   }
+  // }, [containerHeight]);
 
   if (!shouldRenderChild) return null;
   return (
     <div
       ref={containerRef}
-      className={`animation-container ${isMounted ? "grow" : "shrink"}`}
+      className="animation-container"
+      // className={`animation-container ${isMounted ? "grow" : "shrink"}`}
     >
       <div style={isMounted ? mountedStyle : unmountedStyle}>{children}</div>
     </div>
@@ -49,45 +121,41 @@ const AnimateRender: React.FC<AnimateRenderProps> = ({
 
 const App: React.FC = () => {
   const [isMounted, setIsMounted] = useState(true);
-  const [isMounted2, setIsMounted2] = useState(true);
-  const [isMounted3, setIsMounted3] = useState(true);
 
   const handleToggleClicked = () => {
     setIsMounted(!isMounted);
-    setTimeout(() => setIsMounted2(!isMounted2), 1000);
-    setTimeout(() => setIsMounted3(!isMounted3), 2000);
   };
 
   return (
     <main>
+      <h1>Header</h1>
       <button onClick={handleToggleClicked}>Click me!</button>
 
       <AnimateRender
         isMounted={isMounted}
-        enter="bounceIn 500ms ease-in"
-        exit="bounceOut 500ms ease-in"
-        duration={500}
+        enter="bounceIn 500ms ease-in 500ms both"
+        exit="bounceOut 500ms ease-in 0ms both"
+        duration={1000}
+      >
+        <h1>YO DUDE!!!</h1>
+      </AnimateRender>
+      <AnimateRender
+        isMounted={isMounted}
+        enter="slideIn 500ms ease-in 500ms both"
+        exit="slideOut 500ms ease-in 0ms both"
+        duration={1000}
       >
         <h1>YO DUDE!!!</h1>
       </AnimateRender>
 
-      <AnimateRender
-        isMounted={isMounted2}
-        enter="fadeIn 500ms ease-in"
-        exit="fadeOut 600ms ease-in"
-        duration={500}
-      >
-        <h1>Hey buddy!!!</h1>
-      </AnimateRender>
-
-      <AnimateRender
-        isMounted={isMounted3}
-        enter="slideIn 500ms ease-in"
-        exit="slideOut 600ms ease-in"
-        duration={500}
-      >
-        <h1>Holla papi!!!</h1>
-      </AnimateRender>
+      <section>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat
+          tenetur, sit voluptates illo ullam itaque cum sed reiciendis libero
+          dolorum soluta assumenda repellendus incidunt asperiores beatae
+          delectus veritatis voluptatem quae.
+        </p>
+      </section>
     </main>
   );
 };
