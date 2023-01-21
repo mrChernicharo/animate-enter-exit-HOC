@@ -6,64 +6,7 @@ import React, {
   RefObject,
 } from "react";
 import "./styles.css";
-
-function useDelayUnmount(
-  isMounted: boolean,
-  delayTime: number,
-  ref: RefObject<HTMLDivElement>
-) {
-  const containerHeight = useRef(0);
-  const [shouldRender, setShouldRender] = useState(false);
-
-  useEffect(() => {
-    if (ref.current?.getBoundingClientRect) {
-      containerHeight.current = ref.current?.getBoundingClientRect().height;
-    }
-  }, [ref, shouldRender]);
-
-  useEffect(() => {
-    let timeoutId: number;
-    if (isMounted && !shouldRender) {
-      console.log("animate enter!", containerHeight.current);
-
-      setShouldRender(true);
-      setTimeout(() => {
-        console.log("entering!", containerHeight.current);
-        ref.current?.animate(
-          [{ height: 0 }, { height: `${containerHeight.current}px` }],
-          { duration: delayTime * 0.5 }
-        );
-      }, 0);
-
-      setTimeout(() => {
-        console.log("will enter!", containerHeight.current);
-      }, delayTime * 0.5);
-
-      setTimeout(() => {
-        console.log("entered!", containerHeight.current);
-      }, delayTime);
-    } else if (!isMounted && shouldRender) {
-      console.log("animate removal!", containerHeight.current);
-
-      setTimeout(() => {
-        console.log("will remove!", containerHeight.current);
-        ref.current?.animate(
-          [{ height: `${containerHeight.current}px` }, { height: 0 }],
-          { duration: delayTime * 0.5 }
-        );
-      }, delayTime * 0.5);
-
-      timeoutId = setTimeout(() => {
-        containerHeight.current = 0;
-        setShouldRender(false);
-        console.log("removed!", containerHeight.current);
-      }, delayTime);
-    }
-    return () => clearTimeout(timeoutId);
-  }, [isMounted, delayTime, shouldRender]);
-
-  return shouldRender;
-}
+import { useDelayUnmount } from "./useDelayUnmount";
 
 interface AnimateRenderProps {
   isMounted: boolean;
@@ -80,15 +23,60 @@ const AnimateRender: React.FC<AnimateRenderProps> = ({
   children,
 }: AnimateRenderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const elRef = useRef<HTMLDivElement>(null);
 
   const shouldRenderChild = useDelayUnmount(isMounted, duration, containerRef);
-  const mountedStyle = { animation: enter };
-  const unmountedStyle = { animation: exit };
+
+  const enterKeyframes = [
+    {
+      opacity: 0,
+      transform: `translateX(-200px)`,
+    },
+    {
+      opacity: 1,
+      transform: `translateX(0)`,
+    },
+  ];
+  const enterAnimationOptions: KeyframeAnimationOptions = {
+    duration: duration * 0.5,
+    delay: duration * 0.5,
+    fill: "both",
+  };
+  const exitKeyframes = [
+    {
+      opacity: 1,
+      transform: `translateX(0)`,
+    },
+    {
+      opacity: 0,
+      transform: `translateX(-200px)`,
+    },
+  ];
+  const exitAnimationOptions: KeyframeAnimationOptions = {
+    duration: duration * 0.5,
+    delay: 0,
+    fill: "both",
+  };
+
+  const enterAnimation: [Keyframe[], KeyframeAnimationOptions] = [
+    enterKeyframes,
+    enterAnimationOptions,
+  ];
+  const exitAnimation: [Keyframe[], KeyframeAnimationOptions] = [
+    exitKeyframes,
+    exitAnimationOptions,
+  ];
+
+  useEffect(() => {
+    isMounted
+      ? elRef.current?.animate(...enterAnimation)
+      : elRef.current?.animate(...exitAnimation);
+  }, [isMounted]);
 
   if (!shouldRenderChild) return null;
   return (
     <div ref={containerRef} className="animation-container">
-      <div style={isMounted ? mountedStyle : unmountedStyle}>{children}</div>
+      <div ref={elRef}>{children}</div>
     </div>
   );
 };
