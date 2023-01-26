@@ -5,38 +5,48 @@ export function useDelayUnmount(
   isMounted: boolean,
   delayTime: number,
   ref: RefObject<HTMLDivElement>,
-  flexibleContainerX = false,
-  flexibleContainerY = false
+  animateContainerX = false,
+  animateContainerY = false
 ) {
+  const animateContainer = animateContainerX || animateContainerY;
   const [shouldRender, setShouldRender] = useState(false);
 
-  const { grow, shrink, cleanup } = useGrowShrinkContainer(shouldRender, ref);
+  const { grow, shrink, remove } = useGrowShrinkContainer(shouldRender, ref);
 
   useEffect(() => {
     let timeoutId: number;
 
+    // expand container (immediately)
     if (isMounted && !shouldRender) {
       setShouldRender(true);
 
-      (flexibleContainerX || flexibleContainerY) &&
+      if (animateContainer) {
         setTimeout(() => {
-          grow(delayTime, flexibleContainerX, flexibleContainerY);
+          grow(delayTime, animateContainerX, animateContainerY);
         }, 0);
+      }
     }
-    //
-    else if (!isMounted && shouldRender) {
-      (flexibleContainerX || flexibleContainerY) &&
-        setTimeout(() => {
-          shrink(delayTime, flexibleContainerX, flexibleContainerY);
-        }, delayTime * 0.5);
 
+    // shrink container (after delay)
+    else if (!isMounted && shouldRender) {
+      if (animateContainer) {
+        setTimeout(() => {
+          shrink(delayTime, animateContainerX, animateContainerY);
+        }, delayTime * 0.5);
+      }
+
+      // then remove container (in the end)
       timeoutId = setTimeout(() => {
         setShouldRender(false);
-        (flexibleContainerX || flexibleContainerY) &&
-          cleanup(flexibleContainerX, flexibleContainerY);
+        if (animateContainer) {
+          remove(animateContainerX, animateContainerY);
+        }
       }, delayTime);
     }
-    return () => clearTimeout(timeoutId);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [isMounted, delayTime, shouldRender]);
 
   return shouldRender;

@@ -7,8 +7,9 @@ export interface AnimateRenderProps {
   exit: string;
   duration: number;
   children: ReactNode;
-  flexibleContainerX?: boolean
-  flexibleContainerY?: boolean
+  animateContainer?: boolean;
+  animateContainerX?: boolean;
+  animateContainerY?: boolean;
 }
 const AnimateRender: React.FC<AnimateRenderProps> = ({
   isMounted,
@@ -16,20 +17,33 @@ const AnimateRender: React.FC<AnimateRenderProps> = ({
   exit,
   duration,
   children,
-  flexibleContainerX = false,
-  flexibleContainerY = false
+  animateContainer = false, // both x and y
+  animateContainerX = false,
+  animateContainerY = false,
 }: AnimateRenderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const shouldRenderChild = useDelayUnmount(isMounted, duration, containerRef, flexibleContainerX, flexibleContainerY);
-  const mountedStyle = { animation: enter };
-  const unmountedStyle = { animation: exit };
+  const animateX = animateContainer || animateContainerX;
+  const animateY = animateContainer || animateContainerY;
+
+  const shouldRenderChild = useDelayUnmount(
+    isMounted,
+    duration,
+    containerRef,
+    animateX,
+    animateY
+  );
 
   return shouldRenderChild ? (
     <div ref={containerRef} className="animation-container">
-      <div className="animation-content" style={isMounted ? mountedStyle : unmountedStyle}>{children}</div>
+      <div
+        className="animation-content"
+        style={isMounted ? { animation: enter } : { animation: exit }}
+      >
+        {children}
+      </div>
     </div>
   ) : null;
 };
 
-export default AnimateRender
+export default AnimateRender;

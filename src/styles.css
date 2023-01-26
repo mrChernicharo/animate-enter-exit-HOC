@@ -3,29 +3,27 @@
   --slideY: 100px;
 }
 
-.App {
-  font-family: sans-serif;
-  text-align: center;
+@keyframes nullIn {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
-
-h1 {
-  font-size: 3.2em;
-}
-
-h3 {
-  background-color: darkgoldenrod;
-  margin: 0;
-
-}
-
-.animation-container {
-  display: block;
-  transform-origin: center;
-  border: 2px dashed blue;
-}
-
-.animation-content {
-  border: 2px dashed purple;
+@keyframes nullOut {
+  0% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes bounceIn {
@@ -49,6 +47,7 @@ h3 {
     transform: scale(1);
   }
 }
+
 @keyframes bounceOut {
   20% {
     opacity: 1;

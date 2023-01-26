@@ -9,21 +9,21 @@ export function useGrowShrinkContainer(
 
   const grow = (
     delayTime: number,
-    flexibleContainerX: boolean,
-    flexibleContainerY: boolean
+    animateContainerX: boolean,
+    animateContainerY: boolean
   ) => {
-    if (!flexibleContainerX && !flexibleContainerY) return;
+    if (!animateContainerX && !animateContainerY) return;
     ref.current?.animate(
       [
         {
-          ...(flexibleContainerY && { height: 0 }),
-          ...(flexibleContainerX && { width: 0 }),
+          ...(animateContainerY && { height: 0 }),
+          ...(animateContainerX && { width: 0 }),
         },
         {
-          ...(flexibleContainerY && {
+          ...(animateContainerY && {
             height: `calc(${containerHeight.current}px)`,
           }),
-          ...(flexibleContainerX && {
+          ...(animateContainerX && {
             width: `calc(${containerWidth.current}px)`,
           }),
         },
@@ -34,24 +34,24 @@ export function useGrowShrinkContainer(
 
   const shrink = (
     delayTime: number,
-    flexibleContainerX: boolean,
-    flexibleContainerY: boolean
+    animateContainerX: boolean,
+    animateContainerY: boolean
   ) => {
-    if (!flexibleContainerX && !flexibleContainerY) return;
+    if (!animateContainerX && !animateContainerY) return;
 
     ref.current?.animate(
       [
         {
-          ...(flexibleContainerY && {
+          ...(animateContainerY && {
             height: `calc(${containerHeight.current}px)`,
           }),
-          ...(flexibleContainerX && {
+          ...(animateContainerX && {
             width: `calc(${containerWidth.current}px)`,
           }),
         },
         {
-          ...(flexibleContainerY && { height: 0 }),
-          ...(flexibleContainerX && { width: 0 }),
+          ...(animateContainerY && { height: 0 }),
+          ...(animateContainerX && { width: 0 }),
         },
       ],
       { duration: delayTime * 0.5, easing: "ease-out" }
@@ -60,11 +60,11 @@ export function useGrowShrinkContainer(
     );
   };
 
-  const cleanup = (
-    flexibleContainerX: boolean,
-    flexibleContainerY: boolean
+  const remove = (
+    animateContainerX: boolean,
+    animateContainerY: boolean
   ) => {
-    if (!flexibleContainerX && !flexibleContainerY) return;
+    if (!animateContainerX && !animateContainerY) return;
 
     containerHeight.current = 0;
     containerWidth.current = 0;
@@ -77,5 +77,5 @@ export function useGrowShrinkContainer(
     }
   }, [ref, shouldRender]);
 
-  return { grow, shrink, cleanup };
+  return { grow, shrink, remove };
 }

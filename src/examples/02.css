@@ -1,0 +1,18 @@
+h1 {
+  font-size: 3.2em;
+}
+
+h3 {
+  background-color: darkgoldenrod;
+  margin: 0;
+}
+
+.animation-container {
+  display: block;
+  transform-origin: center;
+  border: 2px dashed blue;
+}
+
+.animation-content {
+  border: 2px dashed purple;
+}
